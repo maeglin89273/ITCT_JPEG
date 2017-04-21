@@ -97,7 +97,7 @@ private:
         int sX;
         int sY;
     public:
-        Block(byte *superBlockPtr, int height, int width, int cIdx, int superBlockWidth, int upScaleY=1, int upSscaleX=1);
+        Block(byte *bufPtr, int height, int width, int cIdx, int superBlockWidth, int upScaleY=1, int upSscaleX=1);
         ~Block();
         void set(int x, int y, byte value);
         void set(int i, byte value);
@@ -106,7 +106,7 @@ private:
         int getWidth();
         int getHeight();
 
-        void setSuperBlockPtr(byte *superBlockPtr);
+        void setBufferPtr(byte *bufPtr);
 
         void setCIndex(int cIdx);
     };

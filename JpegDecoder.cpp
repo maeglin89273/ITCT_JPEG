@@ -157,7 +157,6 @@ Image* JpegDecoder::decode(unsigned char *buf) {
             byte* infoBegin = &buf[index];
             bool success = true;
             switch (marker) {
-
                 case APP0:
                     std::cout << "APP0 maker detected, I'm too lazy to decode it." << std::endl;
                     break;
@@ -175,7 +174,6 @@ Image* JpegDecoder::decode(unsigned char *buf) {
                     if (success) {
                         infoLen += discard0xFF00(infoBegin + infoLen, infoBegin);
                         infoLen += this->decodeData(infoBegin);
-
                         delete [] infoBegin;
                     }
                     break;
@@ -339,7 +337,7 @@ void JpegDecoder::decodeMCU(byte *&buf, int mcuH, int mcuW, byte *output, int im
     for (int y = 0; y < 8 * mcuH; y += 8) {
         for (int x = 0; x < 8 * mcuW; x += 8) {
             byte *ptr = output + x * 3 + y * 3 * imgWidth;
-            oBlock->setSuperBlockPtr(ptr);
+            oBlock->setBufferPtr(ptr);
             this->decodeBlock(buf, ccY, oBlock);
         }
     }
@@ -363,7 +361,6 @@ void JpegDecoder::decodeBlock(byte *&buf, ColorComponentInfo *colorComp, Block *
 
 int * JpegDecoder::decodeBlockToQuantizedCoefs(byte *&buf, ColorComponentInfo *colorComp) {
 
-
     int qCoef = 0;
     memset(this->qCoefs, 0, 64 * sizeof(int));
 
@@ -378,7 +375,6 @@ int * JpegDecoder::decodeBlockToQuantizedCoefs(byte *&buf, ColorComponentInfo *c
         qCoef = toCoefVal(val, grabLen);
     }
     colorComp->prevDC = this->qCoefs[0] = colorComp->prevDC + qCoef;
-
 
 
     bool eob = false;
@@ -515,8 +511,8 @@ byte JpegDecoder::HTree::decode(byte*& buf, unsigned int &posInByte, bool& error
 
 
 
-JpegDecoder::Block::Block(byte *superBlockPtr, int height, int width, int cIdx, int superBlockWidth, int upScaleY, int upScaleX) {
-    this->ptr = superBlockPtr + cIdx;
+JpegDecoder::Block::Block(byte *bufPtr, int height, int width, int cIdx, int superBlockWidth, int upScaleY, int upScaleX) {
+    this->ptr = bufPtr + cIdx;
     this->cIdx = cIdx;
     this->width = width;
     this->height = height;
@@ -566,8 +562,8 @@ byte JpegDecoder::Block::get(int i) {
     return get(x, y);
 }
 
-void JpegDecoder::Block::setSuperBlockPtr(byte *superBlockPtr) {
-    this->ptr = superBlockPtr + this->cIdx;
+void JpegDecoder::Block::setBufferPtr(byte *bufPtr) {
+    this->ptr = bufPtr + this->cIdx;
 }
 
 void JpegDecoder::Block::setCIndex(int cIdx) {
